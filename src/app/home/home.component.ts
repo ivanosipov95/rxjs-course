@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Course} from '../model/course';
 import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {map, shareReplay} from 'rxjs/operators';
 import {createHttpObservable} from '../common/util';
 
 
@@ -19,7 +19,8 @@ export class HomeComponent implements OnInit {
 
 
     const courses$: Observable<Course[]> = http$.pipe(
-      map(res => res.payload)
+      map(res => res.payload),
+      shareReplay()
     );
 
     const byType = type => (arr, i) => arr.filter(item => item.category === type);
