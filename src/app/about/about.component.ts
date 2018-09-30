@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {concat, interval, merge, of} from 'rxjs';
 import {map, mapTo} from 'rxjs/operators';
+import {createHttpObservable} from '../common/util';
 
 @Component({
   selector: 'about',
@@ -27,11 +28,24 @@ export class AboutComponent implements OnInit {
     //   );
 
 
-    const stream1$ = interval(1000).pipe(mapTo('first'));
-    const stream2$ = interval(500). pipe(mapTo('second'));
+    // const stream1$ = interval(1000).pipe(mapTo('first'));
+    // const stream2$ = interval(500). pipe(mapTo('second'));
+    //
+    //
+    // merge(stream1$, stream2$)
+    //   .subscribe(console.log);
+
+    // const interval1$ = interval(1000);
+    //
+    // const sub = interval1$.subscribe(console.log);
+    //
+    // setTimeout(() => sub.unsubscribe(), 5000);
 
 
-    merge(stream1$, stream2$)
-      .subscribe(console.log);
+    const http$ = createHttpObservable('api/courses');
+
+    const sub = http$.subscribe(console.log);
+
+    setTimeout(() => sub.unsubscribe(), 0);
   }
 }
