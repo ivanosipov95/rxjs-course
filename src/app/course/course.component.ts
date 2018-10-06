@@ -11,7 +11,7 @@ import {
   concatMap,
   switchMap,
   withLatestFrom,
-  concatAll, shareReplay
+  concatAll, shareReplay, throttleTime
 } from 'rxjs/operators';
 import {merge, fromEvent, Observable, concat, of} from 'rxjs';
 import {Lesson} from '../model/lesson';
@@ -43,7 +43,7 @@ export class CourseComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.lessons$ = fromEvent(this.input.nativeElement, 'input').pipe(
-      debounceTime(400),
+      throttleTime(400),
       map((event: any) => event.target.value),
       distinctUntilChanged(),
       startWith(''),
