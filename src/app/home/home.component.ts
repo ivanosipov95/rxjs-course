@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Course} from '../model/course';
-import {Observable, throwError} from 'rxjs';
-import {catchError, map, shareReplay} from 'rxjs/operators';
+import {Observable, throwError, timer} from 'rxjs';
+import {catchError, delayWhen, map, retryWhen, shareReplay} from 'rxjs/operators';
 import {createHttpObservable} from '../common/util';
 
 
@@ -25,7 +25,13 @@ export class HomeComponent implements OnInit {
         return throwError(err);
       }),
       map(res => res.payload),
-      shareReplay()
+      shareReplay(),
+      retryWhen(errors => {
+        return errors.pipe(
+          // delay(2000) // difference between delay and delayWhen in particular case is unclear
+         delayWhen( () => timer(2000))
+        );
+      })
     );
 
     const byType = type => (arr, i) => arr.filter(item => item.category === type);
