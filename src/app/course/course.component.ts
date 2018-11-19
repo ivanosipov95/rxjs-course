@@ -11,9 +11,9 @@ import {
   concatMap,
   switchMap,
   withLatestFrom,
-  concatAll, shareReplay
+  concatAll, shareReplay, first, take
 } from 'rxjs/operators';
-import {merge, fromEvent, Observable, concat} from 'rxjs';
+import {merge, fromEvent, Observable, concat, forkJoin, interval} from 'rxjs';
 import {Lesson} from '../model/lesson';
 import {createHttpObservable} from '../common/util';
 import {Store} from '../common/store.service';
@@ -27,9 +27,7 @@ import {Store} from '../common/store.service';
 export class CourseComponent implements OnInit, AfterViewInit {
 
   courseId: number;
-
   course$: Observable<Course>;
-
   lessons$: Observable<Lesson[]>;
 
 
@@ -41,11 +39,13 @@ export class CourseComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-
     this.courseId = this.route.snapshot.params['id'];
+    this.course$ = this.store.selectCourseById(this.courseId).pipe(first());
 
-    this.course$ = this.store.selectCourseById(this.courseId);
+    interval(1000).pipe(take(3)).subscribe(console.log, () => {}, () => console.log('complete'))
 
+    forkJoin(this.course$, this.loadLessons())
+      .subscribe(console.log);
   }
 
   ngAfterViewInit() {
